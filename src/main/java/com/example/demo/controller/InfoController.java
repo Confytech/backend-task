@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 @RestController
 public class InfoController {
@@ -18,19 +19,22 @@ public class InfoController {
             @RequestParam String track
     ) {
         // Get the current day of the week and UTC time
-        LocalDateTime now = LocalDateTime.now();
-        DayOfWeek dayOfWeek = now.getDayOfWeek();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
-        String utcTime = now.format(dateTimeFormatter);
+        // Get the current UTC time in the desired format
+        ZonedDateTime now = ZonedDateTime.now();
+        DateTimeFormatter utcFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        String utcTime = now.format(utcFormatter);
+
+        // Get the current day
+        String currentDay = now.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
 
         // Create and return the response object
         InfoResponse response = new InfoResponse(
                 slack_name,
-                dayOfWeek.toString(),
+                currentDay,
                 utcTime,
                 track,
-                "https://github.com/username/repo/blob/main/file_name.ext",
-                "https://github.com/username/repo",
+                "https://github.com/Confytech/backend-task/blob/master/src/main/java/com/example/demo/controller/InfoController.java",
+                "https://github.com/Confytech/backend-task",
                 200
         );
         return response;
